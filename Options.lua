@@ -54,8 +54,9 @@ local function CreateMenuGenerator(roleKey)
     return function(owner, rootDescription)
         for _, marker in ipairs(GroupAutoMarkerData.Markers) do
             local markerIndex = marker.index
-            rootDescription:CreateRadio(
-                marker.name,
+            local displayText = "|cFF" .. marker.color .. marker.name .. "|r"
+            local radio = rootDescription:CreateRadio(
+                displayText,
                 function() return GetMarkerForRole(roleKey) == markerIndex end,
                 function()
                     SetMarkerForRole(roleKey, markerIndex)
@@ -63,6 +64,9 @@ local function CreateMenuGenerator(roleKey)
                 end,
                 markerIndex
             )
+            if marker.texture and radio.SetIcon then
+                radio:SetIcon(marker.texture)
+            end
         end
     end
 end

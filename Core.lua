@@ -6,12 +6,11 @@ local addonName = "GroupAutoMarker"
 -- Event handler frame
 local frame = CreateFrame("Frame", "GroupAutoMarkerFrame")
 
--- Returns true if the current instance is a Midnight Mythic dungeon.
+-- Returns true if the current instance is a Midnight dungeon.
 local function IsInMidnightMythic()
-    local _, instanceType, difficulty, _, _, _, _, instanceID = GetInstanceInfo()
+    local _, instanceType, _, _, _, _, _, instanceID = GetInstanceInfo()
 
-    -- difficulty 8 = Mythic (5-player)
-    if instanceType ~= "party" or difficulty ~= 8 then
+    if instanceType ~= "party" then
         return false
     end
 
