@@ -18,19 +18,29 @@ local function IsInMidnightMythic()
     return GroupAutoMarkerData.MidnightDungeons[instanceID] ~= nil
 end
 
+-- Builds the full list of unit tokens for all group members including the player.
+-- In a party, party1-party4 covers other members; "player" must be added separately.
+-- In a raid, raid1-raidN covers everyone including the player.
+local function GetAllGroupUnits()
+    local units = {}
+    local numMembers = GetNumGroupMembers()
+    if IsInRaid() then
+        for i = 1, numMembers do
+            table.insert(units, "raid" .. i)
+        end
+    else
+        table.insert(units, "player")
+        for i = 1, numMembers - 1 do
+            table.insert(units, "party" .. i)
+        end
+    end
+    return units
+end
+
 -- Returns an ordered list of group members sorted by role: Tank, Healer, DPS...
 local function GetMembersOrderedByRole()
     local tanks, healers, dps = {}, {}, {}
-    local numMembers = GetNumGroupMembers()
-
-    for i = 1, numMembers do
-        local unit = "party" .. i
-        -- In a 5-man party, we are not included in the party units;
-        -- check if we are in a raid group just in case.
-        if IsInRaid() then
-            unit = "raid" .. i
-        end
-
+    for _, unit in ipairs(GetAllGroupUnits()) do
         if UnitExists(unit) then
             local role = UnitGroupRolesAssigned(unit)
             if role == "TANK" then
@@ -42,15 +52,12 @@ local function GetMembersOrderedByRole()
             end
         end
     end
-
     return tanks, healers, dps
 end
 
--- Clears all raid markers from party members.
+-- Clears all raid markers from party members including the player.
 local function ClearAllMarkers()
-    local numMembers = GetNumGroupMembers()
-    for i = 1, numMembers do
-        local unit = IsInRaid() and ("raid" .. i) or ("party" .. i)
+    for _, unit in ipairs(GetAllGroupUnits()) do
         if UnitExists(unit) then
             SetRaidTarget(unit, 0)
         end
@@ -77,7 +84,7 @@ local function ApplyMarkers()
         for slotIndex, roleKey in ipairs(group.keys) do
             local unit = group.units[slotIndex]
             if unit then
-                local markerIndex = GroupAutoMarkerDB and GroupAutoMarkerDB[roleKey] or 0
+                local markerIndex = GroupAutoMarkerOptions.GetMarkerForRole(roleKey)
                 if markerIndex ~= 0 then
                     SetRaidTarget(unit, markerIndex)
                 end

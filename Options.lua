@@ -21,6 +21,7 @@ local function GetMarkerForRole(roleKey)
     end
     return defaults[roleKey] or 0
 end
+GroupAutoMarkerOptions.GetMarkerForRole = GetMarkerForRole
 
 -- Saves a marker assignment, resetting any other role that already holds the
 -- same marker to 0 (No Marker) to enforce uniqueness.
