@@ -1,0 +1,110 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+    <!-- Main options panel frame, registered as an addon category page -->
+    <Frame name="GroupAutoMarkerOptionsPanel" hidden="true"
+           onLoad="GroupAutoMarkerOptions.OnLoad(self)"
+           onShow="GroupAutoMarkerOptions.OnShow()">
+
+        <Frames>
+
+            <!-- Panel title -->
+            <FontString name="$parentTitle" inherits="GameFontNormalLarge"
+                        text="Group Auto Marker"
+                        justifyH="LEFT">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativePoint="TOPLEFT" x="16" y="-16"/>
+                </Anchors>
+            </FontString>
+
+            <!-- Subtitle / description -->
+            <FontString name="$parentSubText" inherits="GameFontHighlightSmall"
+                        text="Assign raid markers to each role. Markers must be unique — assigning a marker already in use will clear the previous assignment."
+                        justifyH="LEFT" maxLines="3" nonspacewrap="false">
+                <Anchors>
+                    <Anchor point="TOPLEFT"  relativeTo="$parentTitle" relativePoint="BOTTOMLEFT" y="-8"/>
+                    <Anchor point="RIGHT"    relativePoint="RIGHT" x="-16"/>
+                </Anchors>
+            </FontString>
+
+            <!-- ── Row: Tank ── -->
+            <FontString name="GroupAutoMarker_Label_TANK" inherits="GameFontNormal"
+                        text="Tank" justifyH="LEFT">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parentSubText" relativePoint="BOTTOMLEFT" y="-24"/>
+                </Anchors>
+            </FontString>
+
+            <Frame name="GroupAutoMarker_Dropdown_TANK" inherits="UIDropDownMenuTemplate"
+                   onLoad="GroupAutoMarkerOptions.InitDropdown(self, 'TANK')">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="GroupAutoMarker_Label_TANK" relativePoint="RIGHT" x="8" y="0"/>
+                </Anchors>
+            </Frame>
+
+            <!-- ── Row: Healer ── -->
+            <FontString name="GroupAutoMarker_Label_HEALER" inherits="GameFontNormal"
+                        text="Healer" justifyH="LEFT">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="GroupAutoMarker_Label_TANK" relativePoint="BOTTOMLEFT" y="-16"/>
+                </Anchors>
+            </FontString>
+
+            <Frame name="GroupAutoMarker_Dropdown_HEALER" inherits="UIDropDownMenuTemplate"
+                   onLoad="GroupAutoMarkerOptions.InitDropdown(self, 'HEALER')">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="GroupAutoMarker_Label_HEALER" relativePoint="RIGHT" x="8" y="0"/>
+                </Anchors>
+            </Frame>
+
+            <!-- ── Row: DPS 1 ── -->
+            <FontString name="GroupAutoMarker_Label_DPS1" inherits="GameFontNormal"
+                        text="DPS 1" justifyH="LEFT">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="GroupAutoMarker_Label_HEALER" relativePoint="BOTTOMLEFT" y="-16"/>
+                </Anchors>
+            </FontString>
+
+            <Frame name="GroupAutoMarker_Dropdown_DPS1" inherits="UIDropDownMenuTemplate"
+                   onLoad="GroupAutoMarkerOptions.InitDropdown(self, 'DPS1')">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="GroupAutoMarker_Label_DPS1" relativePoint="RIGHT" x="8" y="0"/>
+                </Anchors>
+            </Frame>
+
+            <!-- ── Row: DPS 2 ── -->
+            <FontString name="GroupAutoMarker_Label_DPS2" inherits="GameFontNormal"
+                        text="DPS 2" justifyH="LEFT">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="GroupAutoMarker_Label_DPS1" relativePoint="BOTTOMLEFT" y="-16"/>
+                </Anchors>
+            </FontString>
+
+            <Frame name="GroupAutoMarker_Dropdown_DPS2" inherits="UIDropDownMenuTemplate"
+                   onLoad="GroupAutoMarkerOptions.InitDropdown(self, 'DPS2')">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="GroupAutoMarker_Label_DPS2" relativePoint="RIGHT" x="8" y="0"/>
+                </Anchors>
+            </Frame>
+
+            <!-- ── Row: DPS 3 ── -->
+            <FontString name="GroupAutoMarker_Label_DPS3" inherits="GameFontNormal"
+                        text="DPS 3" justifyH="LEFT">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="GroupAutoMarker_Label_DPS2" relativePoint="BOTTOMLEFT" y="-16"/>
+                </Anchors>
+            </FontString>
+
+            <Frame name="GroupAutoMarker_Dropdown_DPS3" inherits="UIDropDownMenuTemplate"
+                   onLoad="GroupAutoMarkerOptions.InitDropdown(self, 'DPS3')">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="GroupAutoMarker_Label_DPS3" relativePoint="RIGHT" x="8" y="0"/>
+                </Anchors>
+            </Frame>
+
+        </Frames>
+
+    </Frame>
+
+</Ui>

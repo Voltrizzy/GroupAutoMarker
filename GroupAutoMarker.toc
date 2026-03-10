@@ -1,0 +1,13 @@
+## Interface: 120000
+## Title: Group Auto Marker
+## Notes: Automatically assigns raid markers to group members by role in Midnight Mythic dungeons
+## Author: Voltrizzy
+## Version: 1.0.0
+## SavedVariables: GroupAutoMarkerDB
+## X-Wago-ID: vNAgX9Ko
+## X-Curse-Project-ID:1482324
+
+
+Data.lua
+Options.lua
+Core.lua
