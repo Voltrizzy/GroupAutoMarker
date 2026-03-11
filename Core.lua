@@ -5,7 +5,7 @@ local addonName = "GroupAutoMarker"
 
 -- Event handler frame
 local frame = CreateFrame("Frame", "GroupAutoMarkerFrame")
-local isUpdatePending = false
+local updateTimer = nil
 
 -- Returns true if the current instance is a dungeon.
 local function IsInDungeon()
@@ -100,13 +100,10 @@ frame:SetScript("OnEvent", function(self, event, ...)
         or event == "ZONE_CHANGED_NEW_AREA"
         or event == "PLAYER_ENTERING_WORLD"
     then
-        if not isUpdatePending then
-            isUpdatePending = true
-            C_Timer.After(2, function()
-                isUpdatePending = false
-                ApplyMarkers()
-            end)
+        if updateTimer then
+            updateTimer:Cancel()
         end
+        updateTimer = C_Timer.After(3, ApplyMarkers)
     end
 end)
 
