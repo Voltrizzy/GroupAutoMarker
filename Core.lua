@@ -60,7 +60,7 @@ end
 -- Core marking function: assigns configured markers to each role slot.
 local function ApplyMarkers()
     if not IsInDungeon() then return end
-    if not IsPartyLeader() and not IsRaidOfficer() then return end
+    if not ((UnitIsGroupLeader and UnitIsGroupLeader("player")) or (C_Player and C_Player.IsOfficer and C_Player.IsOfficer())) then return end
 
     ClearAllMarkers()
 
