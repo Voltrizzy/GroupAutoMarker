@@ -47,7 +47,7 @@ local function GetMembersOrderedByRole()
                 table.insert(tanks, unit)
             elseif role == "HEALER" then
                 table.insert(healers, unit)
-            else
+            elseif role == "DAMAGER" then
                 table.insert(dps, unit)
             end
         end
