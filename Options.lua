@@ -143,4 +143,20 @@ function GroupAutoMarkerOptions.InitSavedVars()
             GroupAutoMarkerDB[key] = value
         end
     end
+
+    -- Enforce uniqueness on the initialized data
+    local usedMarkers = {}
+    for _, role in ipairs(GroupAutoMarkerData.Roles) do
+        local roleKey = role.key
+        local marker = GroupAutoMarkerDB[roleKey]
+        if marker and marker ~= 0 then
+            if usedMarkers[marker] then
+                -- This marker is already used, so reset this role's marker to 0 (none)
+                GroupAutoMarkerDB[roleKey] = 0
+            else
+                -- This marker is not used yet, claim it
+                usedMarkers[marker] = true
+            end
+        end
+    end
 end

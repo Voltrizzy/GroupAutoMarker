@@ -5,6 +5,7 @@ local addonName = "GroupAutoMarker"
 
 -- Event handler frame
 local frame = CreateFrame("Frame", "GroupAutoMarkerFrame")
+local isUpdatePending = false
 
 -- Returns true if the current instance is a Midnight dungeon.
 local function IsInMidnightMythic()
@@ -40,7 +41,7 @@ end
 local function GetMembersOrderedByRole()
     local tanks, healers, dps = {}, {}, {}
     for _, unit in ipairs(GetAllGroupUnits()) do
-        if UnitExists(unit) then
+        if UnitExists(unit) and UnitIsConnected(unit) then
             local role = UnitGroupRolesAssigned(unit)
             if role == "TANK" then
                 table.insert(tanks, unit)
@@ -106,8 +107,13 @@ frame:SetScript("OnEvent", function(self, event, ...)
         or event == "ZONE_CHANGED_NEW_AREA"
         or event == "PLAYER_ENTERING_WORLD"
     then
-        -- Small delay to let role assignments and instance data settle
-        C_Timer.After(2, ApplyMarkers)
+        if not isUpdatePending then
+            isUpdatePending = true
+            C_Timer.After(2, function()
+                isUpdatePending = false
+                ApplyMarkers()
+            end)
+        end
     end
 end)
 
