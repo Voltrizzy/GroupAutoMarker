@@ -7,15 +7,10 @@ local addonName = "GroupAutoMarker"
 local frame = CreateFrame("Frame", "GroupAutoMarkerFrame")
 local isUpdatePending = false
 
--- Returns true if the current instance is a Midnight dungeon.
-local function IsInMidnightMythic()
-    local _, instanceType, _, _, _, _, _, instanceID = GetInstanceInfo()
-
-    if instanceType ~= "party" then
-        return false
-    end
-
-    return GroupAutoMarkerData.MidnightDungeons[instanceID] ~= nil
+-- Returns true if the current instance is a dungeon.
+local function IsInDungeon()
+    local _, instanceType = GetInstanceInfo()
+    return instanceType == "party" or instanceType == "scenario"
 end
 
 -- Builds the full list of unit tokens for all group members including the player.
@@ -39,7 +34,7 @@ end
 
 -- Returns an ordered list of group members sorted by role: Tank, Healer, DPS...
 local function GetMembersOrderedByRole()
-    local tanks, healers, dps = {}, {}, {}
+    local tanks, healers = {}, {}
     for _, unit in ipairs(GetAllGroupUnits()) do
         if UnitExists(unit) and UnitIsConnected(unit) then
             local role = UnitGroupRolesAssigned(unit)
@@ -47,12 +42,10 @@ local function GetMembersOrderedByRole()
                 table.insert(tanks, unit)
             elseif role == "HEALER" then
                 table.insert(healers, unit)
-            elseif role == "DAMAGER" then
-                table.insert(dps, unit)
             end
         end
     end
-    return tanks, healers, dps
+    return tanks, healers
 end
 
 -- Clears all raid markers from party members including the player.
@@ -66,18 +59,17 @@ end
 
 -- Core marking function: assigns configured markers to each role slot.
 local function ApplyMarkers()
-    if not IsInMidnightMythic() then return end
+    if not IsInDungeon() then return end
     if not IsPartyLeader() and not IsRaidOfficer() then return end
 
     ClearAllMarkers()
 
-    local tanks, healers, dps = GetMembersOrderedByRole()
+    local tanks, healers = GetMembersOrderedByRole()
 
     -- Map role keys to their ordered unit lists and slot counts
     local roleMapping = {
         { units = tanks,   keys = { "TANK" } },
         { units = healers, keys = { "HEALER" } },
-        { units = dps,     keys = { "DPS1", "DPS2", "DPS3" } },
     }
 
     for _, group in ipairs(roleMapping) do

@@ -55,18 +55,16 @@ local function CreateMenuGenerator(roleKey)
         for _, marker in ipairs(GroupAutoMarkerData.Markers) do
             local markerIndex = marker.index
             local displayText = "|cFF" .. marker.color .. marker.name .. "|r"
-            local radio = rootDescription:CreateRadio(
+            rootDescription:CreateRadio(
                 displayText,
                 function() return GetMarkerForRole(roleKey) == markerIndex end,
                 function()
                     SetMarkerForRole(roleKey, markerIndex)
                     RefreshAllDropdowns()
                 end,
-                markerIndex
+                markerIndex,
+                marker.texture
             )
-            if marker.texture and radio.SetIcon then
-                radio:SetIcon(marker.texture)
-            end
         end
     end
 end
@@ -91,8 +89,7 @@ function GroupAutoMarkerOptions.BuildPanel()
     subtitle:SetPoint("RIGHT", panel, "RIGHT", -16, 0)
     subtitle:SetJustifyH("LEFT")
     subtitle:SetText(
-        "Assign raid markers to each role. " ..
-        "Markers must be unique — assigning a marker already in use will clear the previous assignment."
+        "Assign raid markers to each role. " 
     )
 
     -- One row per role
