@@ -1,8 +1,8 @@
 ## Interface: 120000
 ## Title: Group Auto Marker
-## Notes: Automatically assigns raid markers to group members by role in any dungeon.
+## Notes: Provides a clickable button to assign raid markers to your tank and healer in dungeons.
 ## Author: Voltrizzy
-## Version: 1.1.0
+## Version: 2.0.0
 ## SavedVariables: GroupAutoMarkerDB
 ## X-Wago-ID: vNAgX9Ko
 ## X-Curse-Project-ID:1482324
@@ -10,4 +10,5 @@
 
 Data.lua
 Options.lua
+Button.xml
 Core.lua

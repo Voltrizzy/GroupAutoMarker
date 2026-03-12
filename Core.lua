@@ -1,11 +1,8 @@
 -- GroupAutoMarker: Core.lua
--- Main auto-marking engine. Listens for group/zone events and applies markers.
+-- Simplified, manual-trigger marking engine.
 
 local addonName = "GroupAutoMarker"
-
--- Event handler frame
-local frame = CreateFrame("Frame", "GroupAutoMarkerFrame")
-local updateTimer = nil
+GroupAutoMarker = {}
 
 -- Returns true if the current instance is a dungeon.
 local function IsInDungeon()
@@ -14,8 +11,6 @@ local function IsInDungeon()
 end
 
 -- Builds the full list of unit tokens for all group members including the player.
--- In a party, party1-party4 covers other members; "player" must be added separately.
--- In a raid, raid1-raidN covers everyone including the player.
 local function GetAllGroupUnits()
     local units = {}
     local numMembers = GetNumGroupMembers()
@@ -48,7 +43,7 @@ local function GetMembersOrderedByRole()
     return tanks, healers
 end
 
--- Clears all raid markers from party members including the player.
+-- Clears all existing raid markers from the group.
 local function ClearAllMarkers()
     for _, unit in ipairs(GetAllGroupUnits()) do
         if UnitExists(unit) then
@@ -57,57 +52,50 @@ local function ClearAllMarkers()
     end
 end
 
--- Core marking function: assigns configured markers to each role slot.
-local function ApplyMarkers()
-    if InCombatLockdown() then return end
-    if not IsInDungeon() then return end
-    if not ((UnitIsGroupLeader and UnitIsGroupLeader("player")) or (C_Player and C_Player.IsOfficer and C_Player.IsOfficer())) then return end
+-- Core marking function, triggered by a secure button click.
+function GroupAutoMarker.ApplyMarkers()
+    -- Check for leadership is still good practice
+    if not (UnitIsGroupLeader("player") or (C_Player and C_Player.IsOfficer and C_Player.IsOfficer())) then
+        print(addonName .. ": You must be the group leader or an assistant to set markers.")
+        return
+    end
 
     ClearAllMarkers()
 
     local tanks, healers = GetMembersOrderedByRole()
+    local markerSet = false
 
-    -- Map role keys to their ordered unit lists and slot counts
-    local roleMapping = {
-        { units = tanks,   keys = { "TANK" } },
-        { units = healers, keys = { "HEALER" } },
-    }
+    -- Mark Tank with Square (2)
+    if tanks[1] then
+        SetRaidTarget(tanks[1], 2)
+        markerSet = true
+    end
 
-    for _, group in ipairs(roleMapping) do
-        for slotIndex, roleKey in ipairs(group.keys) do
-            local unit = group.units[slotIndex]
-            if unit then
-                local markerIndex = GroupAutoMarkerOptions.GetMarkerForRole(roleKey)
-                if markerIndex ~= 0 then
-                    SetRaidTarget(unit, markerIndex)
-                end
-            end
-        end
+    -- Mark Healer with Star (4)
+    if healers[1] then
+        SetRaidTarget(healers[1], 4)
+        markerSet = true
+    end
+
+    -- Hide the button after a successful marking.
+    if markerSet and GAM_IconButton then
+        GAM_IconButton:Hide()
     end
 end
 
--- Event dispatcher
-frame:SetScript("OnEvent", function(self, event, ...)
-    if event == "ADDON_LOADED" then
-        local name = ...
-        if name == addonName then
-            GroupAutoMarkerOptions.InitSavedVars()
-            GroupAutoMarkerOptions.BuildPanel()
-            self:UnregisterEvent("ADDON_LOADED")
+-- This frame manages the visibility of the manual-marker button.
+local visibilityFrame = CreateFrame("Frame", "GroupAutoMarkerVisibilityFrame")
+visibilityFrame:SetScript("OnEvent", function(self, event, ...)
+    if IsInDungeon() and (UnitIsGroupLeader("player") or (C_Player and C_Player.IsOfficer and C_Player.IsOfficer())) then
+        if GAM_IconButton then
+            GAM_IconButton:Show()
         end
-
-    elseif event == "GROUP_ROSTER_UPDATE"
-        or event == "ZONE_CHANGED_NEW_AREA"
-        or event == "PLAYER_ENTERING_WORLD"
-    then
-        if updateTimer then
-            updateTimer:Cancel()
+    else
+        if GAM_IconButton then
+            GAM_IconButton:Hide()
         end
-        updateTimer = C_Timer.After(3, ApplyMarkers)
     end
 end)
-
-frame:RegisterEvent("ADDON_LOADED")
-frame:RegisterEvent("GROUP_ROSTER_UPDATE")
-frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+visibilityFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+visibilityFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+visibilityFrame:RegisterEvent("GROUP_ROSTER_UPDATE") -- Also check when roles/leader changes
